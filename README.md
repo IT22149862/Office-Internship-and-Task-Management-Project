@@ -1,4 +1,4 @@
-# Orbit — Internship Management and Task Tracking System
+## Internship Management and Task Tracking System
 
 A full-stack web app for running a software internship end to end: manage interns, create
 projects, assign and track tasks through a real review workflow, and collect daily work logs.
