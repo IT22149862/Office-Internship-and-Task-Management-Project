@@ -19,7 +19,7 @@ yarn-error.log*
 .env.*.local
 backend/.env
 frontend/.env
-backend/src/main/resources/application-local.properties
+backend/src/main/resources/application.properties
 
 # ===== Editors / OS =====
 .idea/
