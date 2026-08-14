@@ -114,6 +114,7 @@ export default function AdminTasks() {
 
   return (
     <Layout
+      eyebrow="Workflow"
       title="Tasks"
       subtitle="Assign work, track progress, and review submissions"
       actions={<button className="btn btn-primary" onClick={openCreate}><IconPlus /> New Task</button>}
@@ -177,8 +178,8 @@ export default function AdminTasks() {
                         {t.status === 'SUBMITTED' && (
                           <button className="btn btn-secondary btn-sm" onClick={() => openReview(t)}>Review</button>
                         )}
-                        <button className="btn btn-ghost btn-sm" onClick={() => openEdit(t)}><IconEdit /></button>
-                        <button className="btn btn-danger btn-sm" onClick={() => handleDelete(t)}><IconTrash /></button>
+                        <button className="btn btn-secondary btn-sm" onClick={() => openEdit(t)}><IconEdit /> Edit</button>
+                        <button className="btn btn-danger btn-sm" onClick={() => handleDelete(t)}><IconTrash /> Delete</button>
                       </div>
                     </td>
                   </tr>
@@ -191,6 +192,7 @@ export default function AdminTasks() {
 
       {modalOpen && (
         <Modal
+          eyebrow={editing ? 'Edit Record' : 'New Assignment'}
           title={editing ? 'Edit Task' : 'New Task'}
           onClose={() => setModalOpen(false)}
           maxWidth={620}
@@ -258,6 +260,7 @@ export default function AdminTasks() {
 
       {reviewTask && (
         <Modal
+          eyebrow="Submission Review"
           title={`Review: ${reviewTask.title}`}
           onClose={() => setReviewTask(null)}
           maxWidth={560}
@@ -270,12 +273,12 @@ export default function AdminTasks() {
         >
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 18 }}>
             {reviewTask.submissionRepoLink && (
-              <a href={reviewTask.submissionRepoLink} target="_blank" rel="noreferrer" className="flex-row" style={{ color: 'var(--indigo)', fontWeight: 600, fontSize: 13.5 }}>
+              <a href={reviewTask.submissionRepoLink} target="_blank" rel="noreferrer" className="flex-row" style={{ color: 'var(--gold-dark)', fontWeight: 600, fontSize: 13.5 }}>
                 <IconLink /> Repository link
               </a>
             )}
             {reviewTask.submissionDocLink && (
-              <a href={reviewTask.submissionDocLink} target="_blank" rel="noreferrer" className="flex-row" style={{ color: 'var(--indigo)', fontWeight: 600, fontSize: 13.5 }}>
+              <a href={reviewTask.submissionDocLink} target="_blank" rel="noreferrer" className="flex-row" style={{ color: 'var(--gold-dark)', fontWeight: 600, fontSize: 13.5 }}>
                 <IconLink /> Documentation link
               </a>
             )}

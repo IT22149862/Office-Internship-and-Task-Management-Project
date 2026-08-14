@@ -83,6 +83,7 @@ export default function AdminInterns() {
 
   return (
     <Layout
+      eyebrow="People"
       title="Interns"
       subtitle="Manage profiles, access, and tracks for every intern"
       actions={<button className="btn btn-primary" onClick={openCreate}><IconPlus /> Add Intern</button>}
@@ -143,8 +144,8 @@ export default function AdminInterns() {
                           <button className="btn btn-ghost btn-sm" onClick={() => toggleActive(intern)}>
                             {intern.active ? 'Deactivate' : 'Activate'}
                           </button>
-                          <button className="btn btn-ghost btn-sm" onClick={() => openEdit(intern)}><IconEdit /></button>
-                          <button className="btn btn-danger btn-sm" onClick={() => handleDelete(intern)}><IconTrash /></button>
+                          <button className="btn btn-secondary btn-sm" onClick={() => openEdit(intern)}><IconEdit /> Edit</button>
+                          <button className="btn btn-danger btn-sm" onClick={() => handleDelete(intern)}><IconTrash /> Delete</button>
                         </div>
                       </td>
                     </tr>
@@ -158,6 +159,7 @@ export default function AdminInterns() {
 
       {modalOpen && (
         <Modal
+          eyebrow={editing ? 'Edit Record' : 'New Account'}
           title={editing ? 'Edit Intern' : 'Add Intern'}
           onClose={() => setModalOpen(false)}
           footer={

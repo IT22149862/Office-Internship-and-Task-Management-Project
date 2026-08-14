@@ -1,13 +1,11 @@
 import axios from 'axios';
 
-// Backend API base URL — no .env file needed. If your Spring Boot backend
-// runs on a different host/port, just change this one line.
-const baseURL = 'http://localhost:8080/api';
+const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
 
 const api = axios.create({ baseURL });
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('orbit_token');
+  const token = localStorage.getItem('ims_token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -18,8 +16,8 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      localStorage.removeItem('orbit_token');
-      localStorage.removeItem('orbit_user');
+      localStorage.removeItem('ims_token');
+      localStorage.removeItem('ims_user');
       if (!window.location.pathname.startsWith('/login')) {
         window.location.href = '/login';
       }

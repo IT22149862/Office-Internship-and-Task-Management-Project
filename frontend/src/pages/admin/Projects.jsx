@@ -84,6 +84,7 @@ export default function AdminProjects() {
 
   return (
     <Layout
+      eyebrow="Delivery"
       title="Projects"
       subtitle="Create and track projects assigned to interns"
       actions={<button className="btn btn-primary" onClick={openCreate}><IconPlus /> New Project</button>}
@@ -133,8 +134,8 @@ export default function AdminProjects() {
                     <td><StatusPill value={p.status} /></td>
                     <td>
                       <div className="flex-row" style={{ justifyContent: 'flex-end' }}>
-                        <button className="btn btn-ghost btn-sm" onClick={() => openEdit(p)}><IconEdit /></button>
-                        <button className="btn btn-danger btn-sm" onClick={() => handleDelete(p)}><IconTrash /></button>
+                        <button className="btn btn-secondary btn-sm" onClick={() => openEdit(p)}><IconEdit /> Edit</button>
+                        <button className="btn btn-danger btn-sm" onClick={() => handleDelete(p)}><IconTrash /> Delete</button>
                       </div>
                     </td>
                   </tr>
@@ -147,6 +148,7 @@ export default function AdminProjects() {
 
       {modalOpen && (
         <Modal
+          eyebrow={editing ? 'Edit Record' : 'New Project'}
           title={editing ? 'Edit Project' : 'New Project'}
           onClose={() => setModalOpen(false)}
           maxWidth={620}
@@ -198,7 +200,8 @@ export default function AdminProjects() {
                       style={{
                         display: 'flex', alignItems: 'center', gap: 6, padding: '6px 10px',
                         border: '1px solid var(--border-strong)', borderRadius: 8, fontSize: 12.5, cursor: 'pointer',
-                        background: checked ? 'var(--indigo-soft)' : 'var(--surface)',
+                        background: checked ? 'var(--gold-100)' : 'var(--surface)',
+                        color: 'var(--text-primary)',
                       }}
                     >
                       <input type="checkbox" checked={checked} onChange={() => toggleIntern(i.id)} />

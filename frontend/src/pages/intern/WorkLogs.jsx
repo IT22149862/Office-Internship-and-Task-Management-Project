@@ -40,9 +40,9 @@ export default function InternWorkLogs() {
   };
 
   return (
-    <Layout title="Work Logs" subtitle="Record what you worked on each day">
+    <Layout eyebrow="Your Workspace" title="Work Logs" subtitle="Record what you worked on each day">
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.3fr', gap: 20, alignItems: 'flex-start' }}>
-        <div className="panel">
+        <div className="panel" style={{ marginBottom: 0 }}>
           <div className="panel-header"><h3>New Entry</h3></div>
           <div className="panel-body">
             {formError && <div className="banner banner-error">{formError}</div>}
@@ -80,7 +80,7 @@ export default function InternWorkLogs() {
           </div>
         </div>
 
-        <div className="panel">
+        <div className="panel" style={{ marginBottom: 0 }}>
           <div className="panel-header"><h3>History</h3></div>
           <div className="panel-body">
             {error && <div className="banner banner-error">{error}</div>}
@@ -89,19 +89,22 @@ export default function InternWorkLogs() {
             ) : logs.length === 0 ? (
               <EmptyState title="No entries yet" description="Your first log entry will appear here." />
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <div className="timeline">
                 {logs.map((log) => (
-                  <div key={log.id} style={{ borderBottom: '1px solid var(--border)', paddingBottom: 14 }}>
-                    <div className="flex-between">
-                      <span className="cell-title" style={{ fontSize: 13.5 }}>{log.logDate}</span>
-                      <span className="cell-muted" style={{ fontSize: 12 }}>{log.hoursWorked}h</span>
-                    </div>
-                    <p style={{ fontSize: 13, margin: '6px 0 0' }}>{log.completedWork}</p>
-                    {log.supervisorFeedback && (
-                      <div style={{ fontSize: 12, marginTop: 8, background: 'var(--indigo-soft)', color: 'var(--indigo-dark)', padding: 8, borderRadius: 6 }}>
-                        <strong>Supervisor:</strong> {log.supervisorFeedback}
+                  <div key={log.id} className="timeline-item">
+                    <div className="timeline-dot" />
+                    <div className="timeline-card">
+                      <div className="flex-between">
+                        <span className="cell-title" style={{ fontSize: 13.5 }}>{log.logDate}</span>
+                        <span className="cell-muted" style={{ fontSize: 12 }}>{log.hoursWorked}h logged</span>
                       </div>
-                    )}
+                      <p style={{ fontSize: 13, margin: '8px 0 0' }}>{log.completedWork}</p>
+                      {log.supervisorFeedback && (
+                        <div style={{ fontSize: 12, marginTop: 10, background: 'var(--gold-100)', color: 'var(--gold-deep)', padding: 10, borderRadius: 8 }}>
+                          <strong>Supervisor:</strong> {log.supervisorFeedback}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>

@@ -2,18 +2,25 @@ import { useEffect, useState } from 'react';
 import Layout from '../../components/layout/Layout';
 import Modal from '../../components/ui/Modal';
 import StatusPill from '../../components/ui/StatusPill';
-import StatusLadder from '../../components/ui/StatusLadder';
 import EmptyState from '../../components/ui/EmptyState';
 import { listTasks, updateTaskStatus, submitTask } from '../../api/tasks';
 import { listProjects } from '../../api/projects';
+
+const COLUMNS = [
+  { key: 'TODO', label: 'To Do' },
+  { key: 'IN_PROGRESS', label: 'In Progress' },
+  { key: 'SUBMITTED', label: 'Submitted' },
+  { key: 'REVISION_REQUIRED', label: 'Revision' },
+  { key: 'COMPLETED', label: 'Completed' },
+];
 
 export default function InternTasks() {
   const [tasks, setTasks] = useState([]);
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
 
+  const [detailTask, setDetailTask] = useState(null);
   const [submitModalTask, setSubmitModalTask] = useState(null);
   const [submitForm, setSubmitForm] = useState({ submissionRepoLink: '', submissionDocLink: '', submissionNotes: '' });
   const [submitError, setSubmitError] = useState('');
@@ -21,16 +28,13 @@ export default function InternTasks() {
 
   const load = () => {
     setLoading(true);
-    listTasks(statusFilter ? { status: statusFilter } : {})
+    listTasks({})
       .then(setTasks)
       .catch(() => setError('Could not load your tasks.'))
       .finally(() => setLoading(false));
   };
 
-  useEffect(() => {
-    load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [statusFilter]);
+  useEffect(load, []);
 
   useEffect(() => {
     listProjects({}).then(setProjects).catch(() => {});
@@ -40,11 +44,13 @@ export default function InternTasks() {
 
   const markInProgress = async (task) => {
     await updateTaskStatus(task.id, 'IN_PROGRESS');
+    setDetailTask(null);
     load();
   };
 
   const openSubmit = (task) => {
     setSubmitModalTask(task);
+    setDetailTask(null);
     setSubmitForm({ submissionRepoLink: task.submissionRepoLink || '', submissionDocLink: task.submissionDocLink || '', submissionNotes: task.submissionNotes || '' });
     setSubmitError('');
   };
@@ -64,74 +70,81 @@ export default function InternTasks() {
     }
   };
 
+  const tasksByColumn = (key) => tasks.filter((t) => t.status === key);
+
   return (
-    <Layout title="My Tasks" subtitle="Track deadlines, update progress, and submit your work">
+    <Layout eyebrow="Your Workspace" title="My Tasks" subtitle="Drag your eye across the board — click any card for details">
       {error && <div className="banner banner-error">{error}</div>}
 
-      <div className="panel">
-        <div className="panel-header">
-          <h3>Assigned Tasks</h3>
-          <select className="filter-select" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-            <option value="">All statuses</option>
-            <option value="TODO">To Do</option>
-            <option value="IN_PROGRESS">In Progress</option>
-            <option value="SUBMITTED">Submitted</option>
-            <option value="REVISION_REQUIRED">Revision Needed</option>
-            <option value="COMPLETED">Completed</option>
-          </select>
-        </div>
-
-        <div className="panel-body">
-          {loading ? (
-            <div className="loading-text">Loading tasks&hellip;</div>
-          ) : tasks.length === 0 ? (
-            <EmptyState title="No tasks assigned" description="Your supervisor hasn't assigned you any tasks yet." />
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              {tasks.map((t) => (
-                <div key={t.id} style={{ border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: 18 }}>
-                  <div className="flex-between" style={{ marginBottom: 6, alignItems: 'flex-start' }}>
-                    <div>
-                      <div className="cell-title" style={{ fontSize: 15 }}>{t.title}</div>
-                      <div className="cell-muted" style={{ fontSize: 12, marginTop: 2 }}>
-                        {projectName(t.projectId)} &middot; {t.deadline ? `Due ${t.deadline}` : 'No deadline'}
-                      </div>
-                    </div>
+      {loading ? (
+        <div className="loading-text">Loading tasks&hellip;</div>
+      ) : tasks.length === 0 ? (
+        <div className="panel"><div className="panel-body"><EmptyState title="No tasks assigned" description="Your supervisor hasn't assigned you any tasks yet." /></div></div>
+      ) : (
+        <div className="kanban-board">
+          {COLUMNS.map((col) => {
+            const colTasks = tasksByColumn(col.key);
+            return (
+              <div className="kanban-column" key={col.key}>
+                <div className="kanban-column-header">
+                  <span className="kanban-column-title">{col.label}</span>
+                  <span className="kanban-count">{colTasks.length}</span>
+                </div>
+                {colTasks.map((t) => (
+                  <div key={t.id} className="kanban-card" onClick={() => setDetailTask(t)} style={{ cursor: 'pointer' }}>
+                    <div className="kanban-card-title">{t.title}</div>
+                    <div className="kanban-card-meta">{projectName(t.projectId)}{t.deadline ? ` · Due ${t.deadline}` : ''}</div>
                     <StatusPill value={t.priority} />
                   </div>
+                ))}
+                {colTasks.length === 0 && <div style={{ fontSize: 11.5, color: 'var(--text-muted)', padding: '6px 4px' }}>Nothing here</div>}
+              </div>
+            );
+          })}
+        </div>
+      )}
 
-                  {t.description && <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: '10px 0' }}>{t.description}</p>}
-
-                  {t.feedbackComment && (
-                    <div style={{ fontSize: 12.5, background: t.status === 'REVISION_REQUIRED' ? 'var(--ruby-soft)' : 'var(--emerald-soft)', color: t.status === 'REVISION_REQUIRED' ? 'var(--ruby)' : 'var(--emerald)', padding: 10, borderRadius: 8, margin: '10px 0' }}>
-                      <strong>Supervisor feedback:</strong> {t.feedbackComment}
-                    </div>
-                  )}
-
-                  <div style={{ margin: '14px 0' }}>
-                    <StatusLadder status={t.status} />
-                  </div>
-
-                  <div className="flex-row" style={{ justifyContent: 'flex-end' }}>
-                    {t.status === 'TODO' && (
-                      <button className="btn btn-secondary btn-sm" onClick={() => markInProgress(t)}>Start Task</button>
-                    )}
-                    {(t.status === 'IN_PROGRESS' || t.status === 'REVISION_REQUIRED') && (
-                      <button className="btn btn-primary btn-sm" onClick={() => openSubmit(t)}>
-                        {t.status === 'REVISION_REQUIRED' ? 'Resubmit Work' : 'Submit Work'}
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ))}
+      {detailTask && (
+        <Modal
+          eyebrow={projectName(detailTask.projectId)}
+          title={detailTask.title}
+          onClose={() => setDetailTask(null)}
+          maxWidth={520}
+          footer={
+            <>
+              <button className="btn btn-secondary" onClick={() => setDetailTask(null)}>Close</button>
+              {detailTask.status === 'TODO' && (
+                <button className="btn btn-primary" onClick={() => markInProgress(detailTask)}>Start Task</button>
+              )}
+              {(detailTask.status === 'IN_PROGRESS' || detailTask.status === 'REVISION_REQUIRED') && (
+                <button className="btn btn-primary" onClick={() => openSubmit(detailTask)}>
+                  {detailTask.status === 'REVISION_REQUIRED' ? 'Resubmit Work' : 'Submit Work'}
+                </button>
+              )}
+            </>
+          }
+        >
+          <div className="flex-row" style={{ marginBottom: 14 }}>
+            <StatusPill value={detailTask.priority} />
+            <span className="cell-muted" style={{ fontSize: 12.5 }}>{detailTask.deadline ? `Due ${detailTask.deadline}` : 'No deadline'}</span>
+          </div>
+          {detailTask.description && <p style={{ fontSize: 13.5, color: 'var(--text-secondary)' }}>{detailTask.description}</p>}
+          {detailTask.feedbackComment && (
+            <div style={{
+              fontSize: 12.5, marginTop: 10, padding: 12, borderRadius: 10,
+              background: detailTask.status === 'REVISION_REQUIRED' ? 'var(--danger-soft)' : 'var(--success-soft)',
+              color: detailTask.status === 'REVISION_REQUIRED' ? 'var(--danger)' : 'var(--success)',
+            }}>
+              <strong>Supervisor feedback:</strong> {detailTask.feedbackComment}
             </div>
           )}
-        </div>
-      </div>
+        </Modal>
+      )}
 
       {submitModalTask && (
         <Modal
-          title={`Submit: ${submitModalTask.title}`}
+          eyebrow="Submit Work"
+          title={submitModalTask.title}
           onClose={() => setSubmitModalTask(null)}
           maxWidth={520}
           footer={

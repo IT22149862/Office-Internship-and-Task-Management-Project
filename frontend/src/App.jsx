@@ -18,7 +18,7 @@ import InternWorkLogs from './pages/intern/WorkLogs';
 
 function RootRedirect() {
   const { user, loading } = useAuth();
-  if (loading) return <div className="loading-text">Loading Orbit&hellip;</div>;
+  if (loading) return <div className="loading-text">Loading&hellip;</div>;
   if (!user) return <Navigate to="/login" replace />;
   return <Navigate to={user.role === 'ADMIN' ? '/admin/dashboard' : '/intern/dashboard'} replace />;
 }

@@ -1,19 +1,20 @@
-import Sidebar from './Sidebar';
+import Topbar from './Topbar';
 
-export default function Layout({ title, subtitle, actions, children }) {
+export default function Layout({ eyebrow, title, subtitle, actions, children }) {
   return (
     <div className="app-shell">
-      <Sidebar />
-      <div className="main-area">
-        <div className="topbar">
+      <Topbar />
+      <div className="page-header">
+        <div className="page-header-row">
           <div>
-            <h1 className="topbar-title">{title}</h1>
-            {subtitle && <div className="topbar-subtitle">{subtitle}</div>}
+            {eyebrow && <div className="page-header-eyebrow">{eyebrow}</div>}
+            <h1>{title}</h1>
+            {subtitle && <div className="page-header-sub">{subtitle}</div>}
           </div>
           {actions && <div className="flex-row">{actions}</div>}
         </div>
-        <div className="content">{children}</div>
       </div>
+      <div className="content">{children}</div>
     </div>
   );
 }

@@ -17,7 +17,7 @@ export default function InternProjects() {
   }, []);
 
   return (
-    <Layout title="My Projects" subtitle="Projects you're currently assigned to">
+    <Layout eyebrow="Your Workspace" title="My Projects" subtitle="Projects you're currently assigned to">
       {error && <div className="banner banner-error">{error}</div>}
 
       {loading ? (
@@ -25,19 +25,19 @@ export default function InternProjects() {
       ) : projects.length === 0 ? (
         <div className="panel"><div className="panel-body"><EmptyState title="No projects yet" description="Your supervisor hasn't assigned you to a project yet." /></div></div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 16 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 18 }}>
           {projects.map((p) => (
-            <div key={p.id} className="panel" style={{ marginBottom: 0 }}>
-              <div className="panel-body">
-                <div className="flex-between" style={{ marginBottom: 10 }}>
-                  <h3 style={{ fontSize: 15.5 }}>{p.name}</h3>
-                  <StatusPill value={p.status} />
-                </div>
-                <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: '0 0 12px' }}>{p.description || 'No description provided.'}</p>
-                <div className="flex-between" style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-                  <span>{p.technology || 'Tech stack TBD'}</span>
-                  <span>{p.deadline ? `Due ${p.deadline}` : 'No deadline set'}</span>
-                </div>
+            <div key={p.id} className="project-card">
+              <div className="flex-between" style={{ marginBottom: 10, position: 'relative' }}>
+                <h3 style={{ fontSize: 16.5 }}>{p.name}</h3>
+                <StatusPill value={p.status} />
+              </div>
+              <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: '0 0 14px', position: 'relative' }}>
+                {p.description || 'No description provided.'}
+              </p>
+              <div className="flex-between" style={{ fontSize: 12, color: 'var(--text-muted)', position: 'relative' }}>
+                <span>{p.technology || 'Tech stack TBD'}</span>
+                <span>{p.deadline ? `Due ${p.deadline}` : 'No deadline set'}</span>
               </div>
             </div>
           ))}

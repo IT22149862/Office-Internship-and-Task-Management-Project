@@ -5,13 +5,13 @@ const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
-    const stored = localStorage.getItem('orbit_user');
+    const stored = localStorage.getItem('ims_user');
     return stored ? JSON.parse(stored) : null;
   });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('orbit_token');
+    const token = localStorage.getItem('ims_token');
     if (!token) {
       setLoading(false);
       return;
@@ -19,11 +19,11 @@ export function AuthProvider({ children }) {
     fetchMe()
       .then((me) => {
         setUser(me);
-        localStorage.setItem('orbit_user', JSON.stringify(me));
+        localStorage.setItem('ims_user', JSON.stringify(me));
       })
       .catch(() => {
-        localStorage.removeItem('orbit_token');
-        localStorage.removeItem('orbit_user');
+        localStorage.removeItem('ims_token');
+        localStorage.removeItem('ims_user');
         setUser(null);
       })
       .finally(() => setLoading(false));
@@ -31,16 +31,16 @@ export function AuthProvider({ children }) {
 
   const login = useCallback(async (email, password) => {
     const data = await apiLogin(email, password);
-    localStorage.setItem('orbit_token', data.token);
+    localStorage.setItem('ims_token', data.token);
     const profile = { id: data.id, fullName: data.fullName, email: data.email, role: data.role };
-    localStorage.setItem('orbit_user', JSON.stringify(profile));
+    localStorage.setItem('ims_user', JSON.stringify(profile));
     setUser(profile);
     return profile;
   }, []);
 
   const logout = useCallback(() => {
-    localStorage.removeItem('orbit_token');
-    localStorage.removeItem('orbit_user');
+    localStorage.removeItem('ims_token');
+    localStorage.removeItem('ims_user');
     setUser(null);
   }, []);
 

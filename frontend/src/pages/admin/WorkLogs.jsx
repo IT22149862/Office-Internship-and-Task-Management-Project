@@ -37,7 +37,7 @@ export default function AdminWorkLogs() {
   };
 
   return (
-    <Layout title="Work Logs" subtitle="Review daily progress reported by interns">
+    <Layout eyebrow="Daily Progress" title="Work Logs" subtitle="Review daily progress reported by interns">
       {error && <div className="banner banner-error">{error}</div>}
 
       <div className="panel">
